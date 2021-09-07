@@ -75,11 +75,11 @@ function splitFile(text){
     let doc = text.split('\n');
     for(let i = 0; i < doc.length; ++i){
         arrays.push(doc[i].split(','));
-        for(let j = 0; j < arrays[i].length; ++j){
-            if(type[j] === "String"){
-                arrays[i][j] = arrays[i][j].substring(1, arrays[i][j].length - 1);
-            }
-        }
+        //for(let j = 0; j < arrays[i].length; ++j){
+            //if(type[j] === "String"){
+            //    arrays[i][j] = arrays[i][j].substring(1, arrays[i][j].length - 1);
+            //}
+        //}
     }
     return arrays;
 }
@@ -141,11 +141,11 @@ function table_to_array(table_id) {
         my_el = [];
 
         for (var j = 0; j < types.length; j++) {
-            if(types[j] === "String"){
-                my_el.push('"' + el[j].innerText + '"');
-            } else {
+            //if(types[j] === "String"){
+            //    my_el.push('"' + el[j].innerText + '"');
+            //} else {
                 my_el.push(el[j].innerText);
-            }
+            //}
         }
 
         //my_liste.push(my_el);
