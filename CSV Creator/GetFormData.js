@@ -21,7 +21,7 @@ function makeDataCSVLine(data){
 }
 
 function getStrInput(name){
-    let val = '"' + document.getElementById(name).value + '"';
+    let val = document.getElementById(name).value;
     if(name === "type"){
         document.getElementById(name).value = "Action";
     } else {
@@ -71,9 +71,15 @@ function makeCSV(){
 //splitFile(text: String) => Array
 function splitFile(text){
     let arrays = [];
+    let type = getTypeArray();
     let doc = text.split('\n');
     for(let i = 0; i < doc.length; ++i){
         arrays.push(doc[i].split(','));
+        for(let j = 0; j < arrays[i].length; ++j){
+            if(type[j] === "String"){
+                arrays[i][j] = arrays[i][j].substring(1, arrays[i][j].length - 1);
+            }
+        }
     }
     return arrays;
 }
