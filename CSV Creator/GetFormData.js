@@ -58,7 +58,6 @@ function makeCSV(){
     let data = table_to_array('dataTable');
     let file = '';
     for(let i = 0; i < data.length; ++i){
-        console.log(data[i]);
         if(!(i == data.length -1)){
             file += makeDataCSVLine(data[i]) + '\n';
         }
@@ -126,7 +125,7 @@ function addTable(text) {
 
 
 function table_to_array(table_id) {
-
+    let types = getTypeArray();
     let myData = document.getElementById(table_id).rows;
     let my_liste = [];
 
@@ -135,8 +134,12 @@ function table_to_array(table_id) {
         el = myData[i].children;
         my_el = [];
 
-        for (var j = 0; j < el.length - 1; j++) {
-            my_el.push(el[j].innerText);
+        for (var j = 0; j < types.length; j++) {
+            if(types[j] === "String"){
+                my_el.push('"' + el[j].innerText + '"');
+            } else {
+                my_el.push(el[j].innerText);
+            }
         }
 
         //my_liste.push(my_el);
@@ -323,4 +326,8 @@ function setInputs(data){
     document.getElementById("type").value = data[6];
     document.getElementById("path").value = data[7];
     document.getElementById("isFancy").value = data[8];
+}
+
+function getTypeArray(){
+    return ["String", "number", "number", "number", "number", "number", "String", "String", "number"];
 }
