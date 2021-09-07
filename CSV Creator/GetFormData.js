@@ -21,7 +21,7 @@ function makeDataCSVLine(data){
 }
 
 function getStrInput(name){
-    let val = document.getElementById(name).value;
+    let val = '"' + document.getElementById(name).value + '"';
     if(name === "type"){
         document.getElementById(name).value = "Action";
     } else {
@@ -84,6 +84,7 @@ function splitFile(text){
 //addTable(vals: array)
 function addTable(text) {
     data = splitFile(text);
+    document.getElementById("fileName").value = document.getElementById("file-input").value.split("\\")[2].split(".")[0];
     parent = document.getElementById("data");
     while (parent.firstChild) {
         parent.removeChild(parent.firstChild);

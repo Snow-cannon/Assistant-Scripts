@@ -1,5 +1,13 @@
-//download(strData: String, strFileName: String, strMimeType: String) => Boolean
+//download(strData: String, strMimeType: String) => Boolean
 function download(strData, strFileName, strMimeType) {
+    if(strFileName === ""){
+        window.alert("Please name the file");
+        return;
+    }
+    if(!confirm("Download Table?")){
+        return;
+    }
+    
     var D = document,
         A = arguments,
         a = D.createElement("a"),
@@ -42,4 +50,9 @@ function download(strData, strFileName, strMimeType) {
         D.body.removeChild(f);
     }, 333);
     return true;
+}
+
+function downloadCSV(){
+    let strFileName = document.getElementById("fileName").value;
+    download(makeCSV(), strFileName, 'text/plain');
 }

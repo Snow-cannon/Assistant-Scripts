@@ -3,11 +3,13 @@
 }
 
 .in{
-    text-decoration: underline;
     border-width: 3px;
     border-style: inset;
     border-radius: 5px;
+}
 
+.file {
+  margin-left: 5px;
 }
 
 body{
