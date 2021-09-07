@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<head>
+    <script src="read_write.js"></script>
+    <script src="GetFormData.js"></script>
+    <link rel="stylesheet" href="decor.css">
+</head>
+<body>
+    <h1 class="headerText">Card Data:</h1>
+
+        <div id="cmd">
+    
+        <!-- File loading script -->
+        <input type="file" id="file-input" />
+        <br><br>
+        <button id="read-button">Load CSV</button>
+        <hr color="gray">
+
+        
+        <button onclick="download(makeCSV(), 'CSVFile', 'text/plain')">Save File</button>
+        <br><br>
+        <button id="addCard" onclick="addCard()">Add Card to List</button>
+    <br>
+
+    </div>
+    <script>
+	    document.querySelector("#read-button").addEventListener('click', function() {
+            if(confirm("Load new File?")){
+                let file = document.querySelector("#file-input").files[0];
+		        let reader = new FileReader();
+		        reader.addEventListener('load', function(e) {
+	    	    	let text = e.target.result;
+                    text.replaceAll('\r\n', '\n');
+                    addTable(text);
+		        });
+		        reader.readAsText(file);
+            }
+	    });
+    </script>
+    
+    <br>
+
+    <table>
+        <tr>
+            <th>Card Name</th>
+            <th>Cost</th>
+            <th>Damage</th>
+            <th>Healing</th>
+            <th>Armor</th>
+            <th>Energy Gain</th>
+            <th>Type</th>
+            <th>Script Path</th>
+            <th>Is Fancy</th>
+        </tr>
+        <tr>
+            <th><input type="text" id="cname" name="cname" class="strIn in"></th>
+            <th><input type="number" id="cost" name="cost" class="numIn in" value="0"></th>
+            <th><input type="number" id="damage" name="damage" class="numIn in" value="0"></th>
+            <th><input type="number" id="healing" name="healing" class="numIn in" value="0"></th>
+            <th><input type="number" id="armor" name="armor" class="numIn in" value="0"></th>
+            <th><input type="number" id="energy_gain" name="energy_gain" class="numIn in" value="0"></th>
+            <th>
+                <select id="type" name="type" class="select in">
+                    <option value="Action">Action</option>
+                    <option value="Passive">Passive</option>
+                </select>
+            </th>
+            <th><input type="text" id="path" name="path" class="strIn in"></th>
+            <th><input type="checkbox" id="isFancy" name="isFancy" class="check in"></th>
+        </tr>
+    </table>
+
+    <br>
+    
+
+    <div id="data">
+        <table id="dataTable">
+            <tbody id="dataBody">
+                <tr>
+                    <th>
+                        None
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>

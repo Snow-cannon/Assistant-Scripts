@@ -1,0 +1,68 @@
+.numIn{
+    width: 40px;
+}
+
+.in{
+    text-decoration: underline;
+    border-width: 3px;
+    border-style: inset;
+    border-radius: 5px;
+
+}
+
+body{
+    background-color: blanchedalmond;
+}
+
+/* Table Stuff */
+table, th, td {
+  border: 2px solid;
+  border-color: gray;
+  border-style:solid;
+  background-color: beige;
+  border-radius: 4px;
+}
+
+th, td {
+  padding: 4px;
+  border-radius: 2px;
+}
+
+/* Card Table */
+.new {
+  background-color:bisque;
+}
+
+.bad {
+  background-color: rgb(218, 104, 76);
+}
+
+.good {
+  background-color: aquamarine;
+}
+
+.name{
+  background-color: lemonchiffon;
+}
+
+.newName{
+  background-color: rgb(202, 187, 153);
+}
+
+/* Other */
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#file-contents {
+  border: 0px solid;
+}
+
+#cmd {
+  border: 3px gray;
+  border-style: inset;
+  background-color: antiquewhite;
+  width: fit-content;
+  padding: 5px;
+}
