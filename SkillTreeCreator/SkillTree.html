@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<head>
+    <title>Skill Tree Editor</title>
+    <link href="skillDecor.css" rel="stylesheet">
+</head>
+<body>
+
+    <div id="control" class="control">
+        <table>
+            <tr>
+                <td>
+                    <label for='name'>Name: </label>
+                </td>
+                <td>
+                    <input type="text" id='name' onkeyup="setData()">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for='script'>Script: </label>
+                </td>
+                <td>
+                    <input type="text" id='script' onkeyup="setData()">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for='tool'>Tooltip: </label>
+                </td>
+                <td>
+                    <input type="text" id='tool' onkeyup="setData()">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <script src="JS.js"></script>
+</body>
