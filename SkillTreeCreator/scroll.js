@@ -771,8 +771,9 @@ function getAllNodeValues(){
 function getNodeValues(node){
     let vals = [];
     let pos = node.getAbsolutePosition();
-    vals.push(node.pos[0]);
-    vals.push(node.pos[1]);
+    console.log(pos);
+    vals.push(pos.x);
+    vals.push(pos.y);
     attributes.map(a => vals.push(node.getAttr(a)));
     return vals;
 }
@@ -931,10 +932,10 @@ function downloadCSVs(){
     let pos = [];
     connections.map(x => {
         pos.push([
-            nodes[x[0]].x(),
-            nodes[x[0]].y(),
-            nodes[x[1]].x(),
-            nodes[x[1]].y()
+            nodes[x[0]].getAbsolutePosition().x,
+            nodes[x[0]].getAbsolutePosition().y,
+            nodes[x[1]].getAbsolutePosition().x,
+            nodes[x[1]].getAbsolutePosition().y
         ]);
     });
     download(makeCSV(vals), 'nodes.txt', 'text/plain');
@@ -942,20 +943,11 @@ function downloadCSVs(){
 
     //Upload File
     let groupVals = getAllGroups();
-    vals = getAllNodeValues();
+    vals = getAllNodeValues(relative);
     connections = getAllLines();
     connections.map(x => {
         vals[x[0]].push(x[1]);
         vals[x[1]].push(x[0]);
-    });
-    pos = [];
-    connections.map(x => {
-        pos.push([
-            nodes[x[0]].x(),
-            nodes[x[0]].y(),
-            nodes[x[1]].x(),
-            nodes[x[1]].y()
-        ]);
     });
     download(makeCSV(vals.concat(connections).concat(groupVals)), 'upload.txt', 'text/plain');
 }
