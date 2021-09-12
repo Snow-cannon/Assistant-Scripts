@@ -6,6 +6,11 @@
 <body>
 
     <div id="control" class="control">
+        <button onclick="win.downloadCSVs()">Download</button>
+        <br><br>
+        <button id='load'>Load File</button>
+        <input type="file" id='file'>
+        <hr color="black">
         <table>
             <tr>
                 <td>
@@ -35,4 +40,21 @@
     </div>
 
     <script src="JS.js"></script>
+
+    <script>
+	    document.querySelector("#load").addEventListener('click', function() {
+            if(confirm("Load new File?")){
+                let file = document.querySelector("#file").files[0];
+		        let reader = new FileReader();
+		        reader.addEventListener('load', function(e) {
+	    	    	let text = e.target.result;
+                    text.replaceAll('\r\n', '\n');
+                    let fullContent = win.splitFile(text);
+                    win.loadNewScene(fullContent);
+		        });
+		        reader.readAsText(file);
+            }
+	    });
+    </script>
+
 </body>

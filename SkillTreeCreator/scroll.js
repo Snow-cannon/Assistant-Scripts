@@ -61,6 +61,7 @@ stage.on('wheel', (e) => {
     stage.position(newPos);
 });
 
+
 //-------------------- Graph Render -------------------//
 
 var widthLine = new Konva.Line({
@@ -137,6 +138,12 @@ window.addEventListener("keyup", function (event) {
     let pos = stage.getRelativePointerPosition();
     let x = pos.x;
     let y = pos.y;
+    
+    if(!shiftPressed){
+        x = Math.round(x / snapSize) * snapSize,
+        y = Math.round(y / snapSize) * snapSize
+    }
+
     let size = 1;
     let index = -1;
 
@@ -145,12 +152,24 @@ window.addEventListener("keyup", function (event) {
             shiftPressed = false;
             break;
         case "1": //Saved for later
+            if(clickedNode !== null){
+                setNodeSize(clickedNode, 1);
+            }
             break;
         case "2": //Saved for later
+            if(clickedNode !== null){
+                setNodeSize(clickedNode, 2);
+            }
             break;
         case "3": //Saved for later
+            if(clickedNode !== null){
+                setNodeSize(clickedNode, 3);
+            }
             break;
         case "4": //Saved for later
+            if(clickedNode !== null){
+                setNodeSize(clickedNode, 4);
+            }
             break;
         case "a": //Creates a node
         case "Space":
@@ -177,6 +196,10 @@ window.addEventListener("keyup", function (event) {
             else if(numPress[3]){ size = 4; }
             makeNodegon(x, y, size);
             break;
+        case "e":
+            if(clickedHex !== null){
+                extendHex(clickedHex, size);
+            }
         default:
             return; // Quit when this doesn't handle the key event.
     }
@@ -219,7 +242,7 @@ function drawPolygon(x, y, r, sides, dir){
 
 //The transformer tool for rotating hexagons
 var trans = new Konva.Transformer({
-    rotationSnaps: [0, 90, 180, 270],
+    rotationSnaps: [0, 45, 90, 135, 180, 225, 270, 315],
     resizeEnabled: false,
 });
 nodesL.add(trans);
@@ -232,7 +255,9 @@ var groups = []; //A list of hexagons and their center points
 var clickedNode = null; //A single node that is currently selected
 var clickedHex = null; //A single hex center for controlling the hex rotation
 var snapSize = 20; //The size of the grid
-const attributes = ['name', 'script', 'tool']; //The list of extra attributes each node contains
+const attributes = ['nsize', 'name', 'script', 'tool']; //The list of extra attributes each node contains
+
+makeNodegon(0, 0, 3);
 
 //The shadow object you see on the screen
 var shadow = new Konva.Rect({
@@ -266,11 +291,7 @@ function makeNode(x, y, size){
     var posTxt = new Konva.Text
 
     attributes.map(a => node.setAttr(a, ''));
-    //Create non-standard attributes
-    //node.setAttr('name', '');
-    //node.setAttr('script', '');
-    //node.setAttr('tool', '');
-    
+    node.setAttr('nsize', size);
     //add the node to the layer, and push it to the node array
     nodes.push(node);
     nodesL.add(node);
@@ -291,6 +312,26 @@ function makeNode(x, y, size){
     })
     node.on("click", setClicked);
     return node;
+}
+
+//setNode(node: Node, x: number, y: number, attr: Array) => None
+function setNode(node, x, y, attr){
+    node.x(x);
+    node.y(y);
+    for(let i = 0; i < attributes.length; i++){
+        if(attr.length - 1 < i){
+            node.setAttr(attributes[i], '');
+        } else {
+            node.setAttr(attributes[i], attr[i]);
+        }
+    }
+    setNodeSize(node, node.getAttr('nsize'));
+}
+
+//setNodeSize(node: Node, size: number) => None
+function setNodeSize(node, size){
+    node.setAttr('nsize', size);
+    node.radius(size * snapSize);
 }
 
 //Creates a line that connects to 2 nodes
@@ -318,6 +359,66 @@ function createMidNode(e){
     let conNodes = getLineNodes(line);
     setLineConnections(line, conNodes[0], newNode);
     makeConLine(newNode, conNodes[1]);
+}
+
+function makeEmptyGon(x, y, size, rot){
+
+    rad = size * snapSize;
+    //Creates the group to add the nodes into
+    let newGroup = new Konva.Group({
+        x: x,
+        y: y,
+        rotation: rot,
+        draggable: false
+    });
+
+    //Creates a center node that is more convenient for dragging
+    let centerNode = new Konva.Circle({
+        x: x,
+        y: y,
+        radius: rad,
+        rotation: rot,
+        draggable: true,
+        fill: "yellow",
+        stroke: "black"
+    });
+
+    nodesL.add(centerNode);
+    nodesL.add(newGroup);
+    centerNode.setAttr('nsize', size);
+    centerNode.on("click", (e) => {
+        setClickedObj("hex", centerNode);
+    });
+    centerNode.on("transform", (e) => {
+        let r = centerNode.rotation();
+        newGroup.setAttr('rotation', r);
+        updateLines();
+    });
+    centerNode.on("dragmove", (e) => {
+        let t = centerNode.position();
+        newGroup.setAttr('x', t.x);
+        newGroup.setAttr('y', t.y);
+        if(!shiftPressed){
+            shadow.show();
+            setShadow(t.x, t.y, centerNode.width() / (snapSize * 2));
+        } else {
+            shadow.hide();
+        }
+        updateLines();
+    })
+    centerNode.on('dragend', (e) => {
+        if(!shiftPressed){ setPos(centerNode); }
+        shadow.hide();
+        let t = centerNode.position();
+        newGroup.setAttr('x', t.x);
+        newGroup.setAttr('y', t.y);
+        updateLines();
+        stage.batchDraw();
+    });
+
+    groups.push([centerNode, newGroup, []]);
+
+    return newGroup; //Group index
 }
 
 //makes a polygon with a node at each of it's corners
@@ -349,6 +450,7 @@ function makeNodegon(x, y, size){
 
     nodesL.add(centerNode);
     nodesL.add(newGroup);
+    centerNode.setAttr('nsize', size);
     centerNode.on("click", (e) => {
         setClickedObj("hex", centerNode);
     });
@@ -379,7 +481,7 @@ function makeNodegon(x, y, size){
         stage.batchDraw();
     });
 
-    groups.push([centerNode, newGroup]);
+    groups.push([centerNode, newGroup, []]);
 
     //Creates a node for each position
     for(let i=0; i<pos.length; ++i){
@@ -387,7 +489,7 @@ function makeNodegon(x, y, size){
         tmpConNodes.push(newNode);
         nodeStopDrag(newNode);
         newGroup.add(newNode);
-        groups[groups.length-1].push(newNode);
+        groups[groups.length-1][2].push(newNode);
     }
 
     //Creates and connects lines to each node in the list
@@ -399,6 +501,22 @@ function makeNodegon(x, y, size){
         makeConLine(tmpConNodes[tmpConNodes.length-1], tmpConNodes[0]);
     }
 
+    updateLines();
+}
+
+//extendHex(centerNode: Node) => None
+function extendHex(centerNode){
+    let index = getCenterHexIndex(centerNode);
+    let oldNodes = groups[index][2];
+    let newNodes = [];
+    let node = null;
+    oldNodes.map(x => {
+        node = makeNode(x.x() * 3, x.y() * 3, x.getAttr('nsize'));
+        newNodes.push(node);
+        groups[index][1].add(node);
+        groups[index][2].push(node);1
+        makeConLine(x, node);
+    });
     updateLines();
 }
 
@@ -530,12 +648,41 @@ function removeHex(centerNode){
     let index = getCenterHexIndex(centerNode);
     let group = groups[index][1];
     //Remove the nodes, which will remove the lines as well
-    for(let i = 2; i < groups[index].length; ++i){
-        removeNode(groups[index][i]);
+    for(let i = 0; i < groups[index][2].length; ++i){
+        removeNode(groups[index][2][i]);
     }
     groups.splice(index, 1);
     group.destroy();
     centerNode.destroy();
+}
+
+//deleteAll() => None
+function deleteAll(){
+    nodes.map(x => {
+        //Remove all connected lines
+        for(let i=0; i<ConLines.length; ++i){
+            line = ConLines[i];
+            if((line[1] === x || line[2] === x)){
+                //remove.push(i);;
+                removeLineIndex(i);
+                --i;
+            }
+        }
+    
+        x.destroy();
+    });
+
+    groups.map(x => {
+        x[0].destroy();
+        x[1].destroy();
+    });
+
+    nodes = []; //A list of nodes and accompanying data
+    ConLines = []; //A list of lines and connected nodes
+    groups = []; //A list of hexagons and their center points
+    clickedNode = null; //A single node that is currently selected
+    clickedHex = null; //A single hex center for controlling the hex rotation
+
 }
 
 //------------------- Update Paint Objects --------------------//
@@ -636,6 +783,25 @@ function getAllLines(){
     return vals;
 }
 
+function getAllGroups(){
+    let vals = [];
+    let tmp = [];
+    groups.map(x => {
+        tmp = [];
+        tmp.push(x[0].x());
+        tmp.push(x[0].y());
+        tmp.push(x[0].getAttr('nsize'));
+        tmp.push(x[0].rotation());
+        x[2].map(y => {
+            tmp.push(getNodeIndex(y));
+        });
+        tmp.push('Is Group');
+        vals.push(tmp);
+    });
+    //console.log(vals);
+    return vals;
+}
+
 //------------------- Make CSV -------------------//
 
 //makeDataCSVLine(data: Array) => String
@@ -657,20 +823,42 @@ function makeCSV(data){
     return file;
 }
 
+//------------------- Load CSV -------------------//
+
 //splitFile(text: String) => Array
 function splitFile(text){
     let arrays = [];
-    let type = getTypeArray();
     let doc = text.split('\n');
     for(let i = 0; i < doc.length; ++i){
         arrays.push(doc[i].split(','));
-        //for(let j = 0; j < arrays[i].length; ++j){
-            //if(type[j] === "String"){
-            //    arrays[i][j] = arrays[i][j].substring(1, arrays[i][j].length - 1);
-            //}
-        //}
     }
     return arrays;
+}
+
+//loadNewScene(data: 2D_Array) => None
+function loadNewScene(data){
+    deleteAll();
+    let nodeA = null;
+    let nodeB = null;
+    let newGon = null;
+    console.log(data);
+    data.map(x => {
+        if(x.length === 2){
+            nodeA = nodes[x[0]];
+            nodeB = nodes[x[1]];
+            makeConLine(nodeA, nodeB);
+        } else if(x[x.length-1] !== 'Is Group'){
+            nodeA = makeNode(0, 0, 1);
+            setNode(nodeA, parseFloat(x[0]), parseFloat(x[1]), x.slice(2, 2 + attributes.length));
+        } else {
+            newGon = makeEmptyGon(parseFloat(x[0]), parseFloat(x[1]), parseFloat(x[2]), parseFloat(x[3]));
+            console.log(x);
+            for(let i = 4; i < x.length - 1; ++i){
+                newGon.add(nodes[parseInt(x[i])]);
+            }
+        }
+    });
+    updateLines();
 }
 
 //------------------- Download File -------------------//
@@ -731,14 +919,44 @@ function download(strData, strFileName, strMimeType) {
 
 //downloadCSVs() => downloads file
 function downloadCSVs(){
-    let vals = getAllNodeValues();
-    let connections = getAllLines();
+
+    //Download File
+    let vals = getAllNodeValues(false);
+    let connections = getAllLines(false);
     connections.map(x => {
         vals[x[0]].push(x[1]);
         vals[x[1]].push(x[0]);
     });
+    let pos = [];
+    connections.map(x => {
+        pos.push([
+            nodes[x[0]].x(),
+            nodes[x[0]].y(),
+            nodes[x[1]].x(),
+            nodes[x[1]].y()
+        ]);
+    });
     download(makeCSV(vals), 'nodes.txt', 'text/plain');
-    download(makeCSV(connections), 'lines.txt', 'text/plain');
+    download(makeCSV(pos), 'lines.txt', 'text/plain');
+
+    //Upload File
+    let groupVals = getAllGroups();
+    vals = getAllNodeValues();
+    connections = getAllLines();
+    connections.map(x => {
+        vals[x[0]].push(x[1]);
+        vals[x[1]].push(x[0]);
+    });
+    pos = [];
+    connections.map(x => {
+        pos.push([
+            nodes[x[0]].x(),
+            nodes[x[0]].y(),
+            nodes[x[1]].x(),
+            nodes[x[1]].y()
+        ]);
+    });
+    download(makeCSV(vals.concat(connections).concat(groupVals)), 'upload.txt', 'text/plain');
 }
 
 //------------------- Start Script --------------------//
