@@ -770,8 +770,9 @@ function getAllNodeValues(){
 //getNodeValues(node: Node) => Array
 function getNodeValues(node){
     let vals = [];
-    vals.push(node.x());
-    vals.push(node.y());
+    let pos = node.getAbsolutePosition();
+    vals.push(node.pos[0]);
+    vals.push(node.pos[1]);
     attributes.map(a => vals.push(node.getAttr(a)));
     return vals;
 }
