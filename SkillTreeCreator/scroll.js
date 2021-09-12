@@ -923,8 +923,8 @@ function download(strData, strFileName, strMimeType) {
 function downloadCSVs(){
 
     //Download File
-    let vals = getAllNodeValues(false);
-    let connections = getAllLines(false);
+    let vals = getAllNodeValues();
+    let connections = getAllLines();
     connections.map(x => {
         vals[x[0]].push(x[1]);
         vals[x[1]].push(x[0]);
@@ -942,8 +942,12 @@ function downloadCSVs(){
     download(makeCSV(pos), 'lines.txt', 'text/plain');
 
     //Upload File
+    stage.x(0);
+    stage.y(0);
+    stage.scale({ x: 1, y: 1 });
+
     let groupVals = getAllGroups();
-    vals = getAllNodeValues(relative);
+    vals = getAllNodeValues();
     connections = getAllLines();
     connections.map(x => {
         vals[x[0]].push(x[1]);
