@@ -941,10 +941,10 @@ function downloadCSVs(){
     let pos = [];
     connections.map(x => {
         pos.push([
-            nodes[x[0]].position().x,
-            nodes[x[0]].position().y,
-            nodes[x[1]].position().x,
-            nodes[x[1]].position().y
+            nodes[x[0]].getAbsolutePosition().x,
+            nodes[x[0]].getAbsolutePosition().y,
+            nodes[x[1]].getAbsolutePosition().x,
+            nodes[x[1]].getAbsolutePosition().y
         ]);
     });
 
