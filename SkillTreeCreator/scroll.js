@@ -15,16 +15,13 @@ var stage = new Konva.Stage({
 var graphL = new Konva.Layer();
 var linesL = new Konva.Layer();
 var nodesL = new Konva.Layer();
-
 stage.add(graphL);
 stage.add(linesL);
 stage.add(nodesL);
 
-
 var WIDTH = 30000;
 var HEIGHT = 30000;
 var NUMBER = 200;
-
 var scaleBy = 0.9;
 
 //If the stage is clicked, set all selections to null
@@ -71,7 +68,6 @@ var widthLine = new Konva.Line({
     lineCap: 'round',
     lineJoin: 'round',
 });
-
 var heightLine = new Konva.Line({
     points: [0, -HEIGHT, 0, HEIGHT],
     stroke: 'red',
@@ -79,7 +75,6 @@ var heightLine = new Konva.Line({
     lineCap: 'round',
     lineJoin: 'round',
 });
-
 graphL.add(widthLine);
 graphL.add(heightLine);
 
@@ -138,12 +133,10 @@ window.addEventListener("keyup", function (event) {
     let pos = stage.getRelativePointerPosition();
     let x = pos.x;
     let y = pos.y;
-    
     if(!shiftPressed){
         x = Math.round(x / snapSize) * snapSize,
         y = Math.round(y / snapSize) * snapSize
     }
-
     let size = 1;
     let index = -1;
 
@@ -287,9 +280,7 @@ function makeNode(x, y, size){
         draggable: true,
         shadowBlur: 10
     });
-
     var posTxt = new Konva.Text
-
     attributes.map(a => node.setAttr(a, ''));
     node.setAttr('nsize', size);
     //add the node to the layer, and push it to the node array
@@ -363,8 +354,8 @@ function createMidNode(e){
 
 function makeEmptyGon(x, y, size, rot){
 
-    rad = size * snapSize;
     //Creates the group to add the nodes into
+    rad = size * snapSize;
     let newGroup = new Konva.Group({
         x: x,
         y: y,
@@ -382,10 +373,11 @@ function makeEmptyGon(x, y, size, rot){
         fill: "yellow",
         stroke: "black"
     });
-
     nodesL.add(centerNode);
     nodesL.add(newGroup);
     centerNode.setAttr('nsize', size);
+
+    //Set Events
     centerNode.on("click", (e) => {
         setClickedObj("hex", centerNode);
     });
@@ -415,16 +407,13 @@ function makeEmptyGon(x, y, size, rot){
         updateLines();
         stage.batchDraw();
     });
-
     groups.push([centerNode, newGroup, []]);
-
     return groups.length - 1; //Group index
 }
 
 //makes a polygon with a node at each of it's corners
 //makeNodeGon(x: number, y: number, size: number) => None
 function makeNodegon(x, y, size){
-    
     let rad = size * 20;
     let pos = []; //Creates an empty list to hold node positions
     let newNode = null;
@@ -447,10 +436,11 @@ function makeNodegon(x, y, size){
         fill: "yellow",
         stroke: "black"
     });
-
     nodesL.add(centerNode);
     nodesL.add(newGroup);
     centerNode.setAttr('nsize', size);
+
+    //Set events
     centerNode.on("click", (e) => {
         setClickedObj("hex", centerNode);
     });
@@ -480,7 +470,6 @@ function makeNodegon(x, y, size){
         updateLines();
         stage.batchDraw();
     });
-
     groups.push([centerNode, newGroup, []]);
 
     //Creates a node for each position
@@ -496,7 +485,6 @@ function makeNodegon(x, y, size){
     for(let i=0; i<tmpConNodes.length -1; i++){
         makeConLine(tmpConNodes[i], tmpConNodes[i+1]);
     }
-
     if(tmpConNodes.length > 1){
         makeConLine(tmpConNodes[tmpConNodes.length-1], tmpConNodes[0]);
     }
@@ -639,7 +627,6 @@ function removeNode(node){
             --i;
         }
     }
-    
     node.destroy();
 }
 
@@ -647,6 +634,7 @@ function removeNode(node){
 function removeHex(centerNode){
     let index = getCenterHexIndex(centerNode);
     let group = groups[index][1];
+
     //Remove the nodes, which will remove the lines as well
     for(let i = 0; i < groups[index][2].length; ++i){
         removeNode(groups[index][2][i]);
@@ -888,14 +876,11 @@ function download(strData, strFileName, strMimeType) {
     //build download link:
     a.href = "data:" + strMimeType + "charset=utf-8," + escape(strData);
 
-
     if (window.MSBlobBuilder) { // IE10
         var bb = new MSBlobBuilder();
         bb.append(strData);
         return navigator.msSaveBlob(bb, strFileName);
     } /* end if(window.MSBlobBuilder) */
-
-
 
     if ('download' in a) { //FF20, CH19
         a.setAttribute("download", n);
@@ -909,8 +894,6 @@ function download(strData, strFileName, strMimeType) {
         }, 66);
         return true;
     }; /* end if('download' in a) */
-
-
 
     //do iframe dataURL download: (older W3)
     var f = D.createElement("iframe");
@@ -927,11 +910,8 @@ function downloadCSVs(){
     stage.x(0);
     stage.y(0);
     stage.scale({ x: 1, y: 1 });
+
     //Download File
-
-    //TODO: Get node positions in array, Add group positions to group nodes, get connection positions based on new node positions
-
-
     let vals = getAllNodeValues(false);
     let connections = getAllLines();
     connections.map(x => {
@@ -947,24 +927,10 @@ function downloadCSVs(){
             nodes[x[1]].getAbsolutePosition().y
         ]);
     });
-
-    /*
-    let gPos = null
-    for(let i = 2; i < groups.length; i += 3){
-        gPos = groups[i].position();
-        groups[i][2].map(x => { //Add group position to node position
-            x.x(x.x() + gPos.x());
-            x.y(x.y() + gPos.y());
-        });
-    }
-    */
-
     download(makeCSV(vals), 'nodes.txt', 'text/plain');
     download(makeCSV(pos), 'lines.txt', 'text/plain');
 
     //Upload File
-
-
     let groupVals = getAllGroups();
     console.log(groupVals);
     vals = getAllNodeValues(true);
@@ -973,7 +939,6 @@ function downloadCSVs(){
         vals[x[0]].push(x[1]);
         vals[x[1]].push(x[0]);
     });
-
     download(makeCSV(vals.concat(connections).concat(groupVals)), 'upload.txt', 'text/plain');
 }
 
