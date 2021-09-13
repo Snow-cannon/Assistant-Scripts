@@ -418,7 +418,7 @@ function makeEmptyGon(x, y, size, rot){
 
     groups.push([centerNode, newGroup, []]);
 
-    return newGroup; //Group index
+    return groups.length - 1; //Group index
 }
 
 //makes a polygon with a node at each of it's corners
@@ -761,17 +761,21 @@ function getNodeIndex(node){
 //------------------- Get Data Values -------------------//
 
 //getValues() => 2D_Array
-function getAllNodeValues(){
+function getAllNodeValues(relative){
     let vals = [];
-    nodes.map(node => vals.push(getNodeValues(node)));
+    nodes.map(node => vals.push(getNodeValues(node, relative)));
     return vals;
 }
 
 //getNodeValues(node: Node) => Array
-function getNodeValues(node){
+function getNodeValues(node, relative){
     let vals = [];
-    let pos = node.getAbsolutePosition();
-    console.log(pos);
+    let pos = null;
+    if(relative){
+        pos =node.position();
+    } else {
+        pos = node.getAbsolutePosition();
+    }
     vals.push(pos.x);
     vals.push(pos.y);
     attributes.map(a => vals.push(node.getAttr(a)));
@@ -796,11 +800,11 @@ function getAllGroups(){
         tmp.push(x[0].rotation());
         x[2].map(y => {
             tmp.push(getNodeIndex(y));
+            //console.log(getNodeIndex(y));
         });
         tmp.push('Is Group');
         vals.push(tmp);
     });
-    //console.log(vals);
     return vals;
 }
 
@@ -843,7 +847,6 @@ function loadNewScene(data){
     let nodeA = null;
     let nodeB = null;
     let newGon = null;
-    console.log(data);
     data.map(x => {
         if(x.length === 2){
             nodeA = nodes[x[0]];
@@ -854,9 +857,9 @@ function loadNewScene(data){
             setNode(nodeA, parseFloat(x[0]), parseFloat(x[1]), x.slice(2, 2 + attributes.length));
         } else {
             newGon = makeEmptyGon(parseFloat(x[0]), parseFloat(x[1]), parseFloat(x[2]), parseFloat(x[3]));
-            console.log(x);
             for(let i = 4; i < x.length - 1; ++i){
-                newGon.add(nodes[parseInt(x[i])]);
+                groups[newGon][1].add(nodes[parseInt(x[i])]);
+                groups[newGon][2].push(nodes[parseInt(x[i])]);
             }
         }
     });
@@ -921,9 +924,15 @@ function download(strData, strFileName, strMimeType) {
 
 //downloadCSVs() => downloads file
 function downloadCSVs(){
-
+    stage.x(0);
+    stage.y(0);
+    stage.scale({ x: 1, y: 1 });
     //Download File
-    let vals = getAllNodeValues();
+
+    //TODO: Get node positions in array, Add group positions to group nodes, get connection positions based on new node positions
+
+
+    let vals = getAllNodeValues(false);
     let connections = getAllLines();
     connections.map(x => {
         vals[x[0]].push(x[1]);
@@ -932,27 +941,39 @@ function downloadCSVs(){
     let pos = [];
     connections.map(x => {
         pos.push([
-            nodes[x[0]].getAbsolutePosition().x,
-            nodes[x[0]].getAbsolutePosition().y,
-            nodes[x[1]].getAbsolutePosition().x,
-            nodes[x[1]].getAbsolutePosition().y
+            nodes[x[0]].position().x,
+            nodes[x[0]].position().y,
+            nodes[x[1]].position().x,
+            nodes[x[1]].position().y
         ]);
     });
+
+    /*
+    let gPos = null
+    for(let i = 2; i < groups.length; i += 3){
+        gPos = groups[i].position();
+        groups[i][2].map(x => { //Add group position to node position
+            x.x(x.x() + gPos.x());
+            x.y(x.y() + gPos.y());
+        });
+    }
+    */
+
     download(makeCSV(vals), 'nodes.txt', 'text/plain');
     download(makeCSV(pos), 'lines.txt', 'text/plain');
 
     //Upload File
-    stage.x(0);
-    stage.y(0);
-    stage.scale({ x: 1, y: 1 });
+
 
     let groupVals = getAllGroups();
-    vals = getAllNodeValues();
+    console.log(groupVals);
+    vals = getAllNodeValues(true);
     connections = getAllLines();
     connections.map(x => {
         vals[x[0]].push(x[1]);
         vals[x[1]].push(x[0]);
     });
+
     download(makeCSV(vals.concat(connections).concat(groupVals)), 'upload.txt', 'text/plain');
 }
 
