@@ -1,0 +1,31 @@
+54.484879300226815,84.85517189906322,1,Archer,archer,Grants the ability to use "Ranged" attack cards,5
+95.74874220603638,-27.86347679925883,1,Protection,protection,Grants the ability to use protection spells,6
+0.43814414415987657,-98.99904024187303,1,Poison,poison,Grants the ability to use poison,7
+-95.49023469171762,-28.707443346759785,1,Comedy,comedy,Grants the ability to use confusion spells,8
+-55.231186796384655,84.36555651109978,1,Dual Wielding,dualwielding,You can use heavy attack cards,9
+163.45463790068044,254.56551569718965,1,Better Arrows,betterarrows,+5% damage on ranged attacks,0,13,12
+287.2462266181092,-83.59043039777649,1,Protection+,protectionincrease,+5% duration on protection spells,1,12,11
+1.3144324324796297,-296.9971207256191,1,Poison+,poisonincrease,+5% poison damage,2,11,10
+-286.47070407515287,-86.12233004027935,1,Comedy Bronze,comedybronze,+5% chance to inflict confused on the enemy,3,10,14
+-165.69356038915396,253.09666953329935,1,Harder Punches,increasedmobility,+5% damage on heavy attack cards,4,14,13
+-142.57813582133662,-191.5597253829492,1,Laughing gas,laughinggas,Confused enemies have a chance to gain 1 poison each turn,8,7
+144.2803295252944,-190.29377556169777,1,Poison Ward,poisonward,Attackers gain 1 poison on each attaack,7,6
+225.3504322593948,85.48754264970658,1,Coat of Daggers,coatofdaggers,You may cast a protection spell as a light attack card to deal it's protection value as damage and remove any current protections you may have.,6,5
+-1.11946124423676,253.8310926152445,1,Big Bow,bigbow,You can no longer use heavy attack cards, but add any heavy attack bonuses to your ranged attacks,5,9
+-226.0821322321534,83.48716974651,1,Flailing Arms,flailingarms,-5% Damage from heavy attacks, but 10% change to confuse enemies on a heavy attack,9,8
+0,5
+1,6
+2,7
+3,8
+4,9
+9,14
+5,13
+6,12
+7,11
+8,10
+10,7
+11,6
+12,5
+13,9
+14,8
+0,0,1,0,0,1,2,3,4,5,6,7,8,9,Is Group

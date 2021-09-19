@@ -407,7 +407,7 @@ function makeEmptyGon(x, y, size, rot){
         updateLines();
         stage.batchDraw();
     });
-    groups.push([centerNode, newGroup, []]);
+    groups.push([centerNode, newGroup, [], false]);
     return groups.length - 1; //Group index
 }
 
@@ -470,7 +470,7 @@ function makeNodegon(x, y, size){
         updateLines();
         stage.batchDraw();
     });
-    groups.push([centerNode, newGroup, []]);
+    groups.push([centerNode, newGroup, [], false]);
 
     //Creates a node for each position
     for(let i=0; i<pos.length; ++i){
@@ -498,7 +498,7 @@ function extendHex(centerNode){
     let oldNodes = groups[index][2];
     let newNodes = [];
     let node = null;
-    oldNodes.map(x => {
+    oldNodes.map(x => { //Extend based on the inner 5 and connect to the outer 5
         node = makeNode(x.x() * 3, x.y() * 3, x.getAttr('nsize'));
         newNodes.push(node);
         groups[index][1].add(node);
